@@ -5,7 +5,7 @@
 - ` brew install go `
 - ` brew install glide ` 
 -  setup [GOPATH](https://gist.github.com/vsouza/77e6b20520d07652ed7d) for your env file (.bashrc or .zshrc)
-- ` git clone ` this repo into your GOPATH ( e.g. ` ~/golang/src ` )
+- ` git clone ` this repo into ` ~/golang/src `
 - ` glide install ` in the local folder
 - ` go get github.com/codegangsta/gin ` to install the reloading dev server
 

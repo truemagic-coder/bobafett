@@ -29,3 +29,4 @@ vendor
 
 # for gin reload
 gin-bin
+go-gin-demo
