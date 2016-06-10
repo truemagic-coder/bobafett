@@ -58,7 +58,7 @@ func main() {
 		// if error 400 with error else 200 with s3 url
 		if err != nil {
 			log.Println("Failed to upload", err)
-			c.JSON(400, gin.H{"error": "there was an error uploading"})
+			c.JSON(500, gin.H{"error": "there was an error uploading"})
 		} else {
 			log.Println("Successfully uploaded to", result.Location)
 			c.JSON(200, gin.H{"url": result.Location})
