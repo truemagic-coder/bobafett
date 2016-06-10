@@ -25,3 +25,4 @@
 - setup with docker
 - setup proper package on github
 - write tests?
+- add bugsnag
