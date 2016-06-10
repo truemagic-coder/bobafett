@@ -1,5 +1,5 @@
-hash: ac9e61b7326061332110e8afba16ed5ec950f6f89677a7867a4c53eb51b65ef4
-updated: 2016-06-09T21:41:00.212176892-07:00
+hash: 971130baabb1d562577f84de57a28605dc8591997842f5aa0b343ac2b6bf4b6d
+updated: 2016-06-10T14:01:44.468711455-07:00
 imports:
 - name: github.com/aws/aws-sdk-go
   version: 64c371362a7b5ecafa2d7cdf90d19aba7343ae02
@@ -7,6 +7,7 @@ imports:
   - aws
   - aws/credentials
   - aws/session
+  - service/s3
   - service/s3/s3manager
   - aws/awserr
   - aws/client
@@ -15,15 +16,14 @@ imports:
   - aws/request
   - private/endpoints
   - aws/awsutil
-  - service/s3
-  - service/s3/s3iface
   - aws/client/metadata
-  - aws/credentials/ec2rolecreds
-  - aws/ec2metadata
   - private/protocol
   - private/protocol/restxml
   - private/signer/v4
   - private/waiter
+  - service/s3/s3iface
+  - aws/credentials/ec2rolecreds
+  - aws/ec2metadata
   - private/protocol/query
   - private/protocol/rest
   - private/protocol/xml/xmlutil
@@ -62,6 +62,8 @@ imports:
   version: ee05b128a739a0fb76c7ebd3ae4810c1de808d6d
 - name: github.com/mitchellh/mapstructure
   version: d2dd0262208475919e1a362f675cfc0e7c10e905
+- name: github.com/rakyll/magicmime
+  version: df5592fbfc25b51c18b5671787d8385879d15c0d
 - name: github.com/satori/go.uuid
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
 - name: github.com/spf13/cast
