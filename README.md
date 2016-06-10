@@ -1,4 +1,4 @@
-# Go Gin S3 Demo
+# Go S3 Microservice
 
 ## Local Setup
 - ` brew update `
