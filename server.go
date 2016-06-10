@@ -20,7 +20,8 @@ import (
 func main() {
 	// create gin server
 	r := gin.Default()
-	// create post file upload route
+
+	// upload route
 	r.POST("/upload", func(c *gin.Context) {
 		// look for config file
 		viper.SetConfigName("config")
@@ -68,6 +69,8 @@ func main() {
 			c.JSON(200, gin.H{"url": result.Location})
 		}
 	})
+
+	// download route
 	r.GET("/download/:key", func(c *gin.Context) {
 		// look for config file
 		viper.SetConfigName("config")
@@ -91,7 +94,7 @@ func main() {
 		if err != nil {
 			c.JSON(500, gin.H{"error": "there was an error downloading"})
 		}
-		// close the file and delete after this is done
+		// close the file and delete after route call is done
 		defer file.Close()
 		defer os.Remove(key)
 		downloader := s3manager.NewDownloader(session.New(&aws.Config{
