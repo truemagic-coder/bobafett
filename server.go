@@ -105,7 +105,6 @@ func main() {
 			Bucket: aws.String(awsBucket),
 			Key:    aws.String(key),
 		})
-		// if error 400 with error else 200 with s3 url
 		if err != nil {
 			log.Println("Failed to download", err)
 			c.JSON(500, gin.H{"error": "there was an error downloading"})
