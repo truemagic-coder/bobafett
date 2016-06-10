@@ -30,5 +30,8 @@
 - `./s3-micro`
 - runs on port `8080`
 
+### Docker
+- a docker file is provided that will build the project - you can use a config or set ENV VARS at your discretion
+
 ## Recommended Go Editor
 - [Visual Studio Code](https://code.visualstudio.com/) with [Go Extension](https://github.com/Microsoft/vscode-go)
