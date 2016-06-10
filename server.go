@@ -14,6 +14,7 @@ import (
 )
 
 func main() {
+	// create gin server
 	r := gin.Default()
 	// create post file upload route
 	r.POST("/upload", func(c *gin.Context) {
