@@ -21,22 +21,23 @@ func main() {
 	// create gin server
 	r := gin.Default()
 
+	// look for config file
+	viper.SetConfigName("config")
+	viper.AddConfigPath(".")
+	err := viper.ReadInConfig()
+	// if no config file then read from ENV VARS
+	if err != nil {
+		viper.AutomaticEnv()
+	}
+	// setup keys from config file or ENV VARS
+	awsID := viper.GetString("AWS_ID")
+	awsSecret := viper.GetString("AWS_SECRET")
+	awsBucket := viper.GetString("AWS_BUCKET")
+	awsRegion := viper.GetString("AWS_REGION")
+	awsToken := viper.GetString("AWS_TOKEN")
+
 	// upload route
 	r.POST("/upload", func(c *gin.Context) {
-		// look for config file
-		viper.SetConfigName("config")
-		viper.AddConfigPath(".")
-		err := viper.ReadInConfig()
-		// if no config file then read from ENV VARS
-		if err != nil {
-			viper.AutomaticEnv()
-		}
-		// setup keys from config file or ENV VARS
-		awsID := viper.GetString("AWS_ID")
-		awsSecret := viper.GetString("AWS_SECRET")
-		awsBucket := viper.GetString("AWS_BUCKET")
-		awsRegion := viper.GetString("AWS_REGION")
-		awsToken := viper.GetString("AWS_TOKEN")
 		// get file upload
 		file, header, err := c.Request.FormFile("file")
 		if err != nil {
@@ -72,20 +73,6 @@ func main() {
 
 	// download route
 	r.GET("/download/:key", func(c *gin.Context) {
-		// look for config file
-		viper.SetConfigName("config")
-		viper.AddConfigPath(".")
-		err := viper.ReadInConfig()
-		// if no config file then read from ENV VARS
-		if err != nil {
-			viper.AutomaticEnv()
-		}
-		// setup keys from config file or ENV VARS
-		awsID := viper.GetString("AWS_ID")
-		awsSecret := viper.GetString("AWS_SECRET")
-		awsBucket := viper.GetString("AWS_BUCKET")
-		awsRegion := viper.GetString("AWS_REGION")
-		awsToken := viper.GetString("AWS_TOKEN")
 		// get AWS key as param
 		key := c.Param("key")
 		log.Println("key", key)
@@ -129,6 +116,7 @@ func main() {
 			}
 		}
 	})
+
 	// run gin server
 	r.Run()
 }
