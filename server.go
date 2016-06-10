@@ -55,13 +55,13 @@ func main() {
 		fileExt := filepath.Ext(header.Filename)
 		// create unique filename
 		filename := u1.String() + fileExt
-		// upload file
+		// upload file to s3
 		result, err := uploader.Upload(&s3manager.UploadInput{
 			Body:   file,
 			Bucket: aws.String(awsBucket),
 			Key:    aws.String(filename),
 		})
-		// if error 400 with error else 200 with s3 url
+		// if can't download then throw error else return s3 key (url)
 		if err != nil {
 			log.Println("Failed to upload", err)
 			c.JSON(500, gin.H{"error": "there was an error uploading"})
@@ -84,6 +84,7 @@ func main() {
 		// close the file and delete after route call is done
 		defer file.Close()
 		defer os.Remove(key)
+		// download file from s3
 		downloader := s3manager.NewDownloader(session.New(&aws.Config{
 			Credentials: credentials.NewStaticCredentials(awsID, awsSecret, awsToken),
 			Region:      aws.String(awsRegion),
@@ -92,26 +93,33 @@ func main() {
 			Bucket: aws.String(awsBucket),
 			Key:    aws.String(key),
 		})
+		// if can't download from S3
 		if err != nil {
 			log.Println("Failed to download", err)
 			c.JSON(500, gin.H{"error": "there was an error downloading"})
 		} else {
-			log.Println("Successfully downloaded", key)
+			// init magicmime else throw error
 			if err := magicmime.Open(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR); err != nil {
 				log.Println("Failed to read mime type", err)
 				c.JSON(500, gin.H{"error": "there was an error reading the mime type"})
 			}
+			// close magicmime after route call is done
 			defer magicmime.Close()
+			// read file
 			bytes, err := ioutil.ReadFile(key)
+			// if can't read file then throw error
 			if err != nil {
 				log.Println("Failed to read file", err)
 				c.JSON(500, gin.H{"error": "there was an error opening the file"})
 			}
+			// read mimetype from file buffer
 			mimetype, err := magicmime.TypeByBuffer(bytes)
+			// if can't read mimetype then throw error
 			if err != nil {
 				log.Println("Failed to read mime type", err)
 				c.JSON(500, gin.H{"error": "there was an error reading the mime type"})
 			} else {
+				// stream data to the requestor
 				c.Data(200, mimetype, bytes)
 			}
 		}
