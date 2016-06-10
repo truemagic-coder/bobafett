@@ -29,7 +29,9 @@ vendor
 
 # for gin reload
 gin-bin
-go-gin-demo
+
+# for go build
+s3-micro
 
 # for AWS config
 config.json

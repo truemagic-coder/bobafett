@@ -1,8 +1,6 @@
 package main
 
 import (
-	"compress/gzip"
-	"io"
 	"log"
 	"path/filepath"
 
@@ -16,7 +14,6 @@ import (
 )
 
 func main() {
-	// setup gin
 	r := gin.Default()
 	// create post file upload route
 	r.POST("/upload", func(c *gin.Context) {
@@ -24,12 +21,11 @@ func main() {
 		viper.SetConfigName("config")
 		viper.AddConfigPath(".")
 		err := viper.ReadInConfig()
+		// if no config file then read from ENV VARS
 		if err != nil {
-			// setup keys from ENV VARS
-			// TODO: test this
 			viper.AutomaticEnv()
 		}
-		// setup keys from config file
+		// setup keys from config file or ENV VARS
 		awsID := viper.GetString("AWS_ID")
 		awsSecret := viper.GetString("AWS_SECRET")
 		awsBucket := viper.GetString("AWS_BUCKET")
@@ -39,18 +35,9 @@ func main() {
 		file, header, err := c.Request.FormFile("file")
 		if err != nil {
 			log.Println("Failed to upload", err)
-			c.JSON(400, gin.H{"error": err})
+			c.JSON(400, gin.H{"error": "you need to provide a file to upload"})
 		}
-		// gzip stream file contents
-		reader, writer := io.Pipe()
-		go func() {
-			gw := gzip.NewWriter(writer)
-			io.Copy(gw, file)
-
-			file.Close()
-			gw.Close()
-			writer.Close()
-		}()
+		// setup s3 uploader
 		uploader := s3manager.NewUploader(session.New(&aws.Config{
 			Credentials: credentials.NewStaticCredentials(awsID, awsSecret, awsToken),
 			Region:      aws.String(awsRegion),
@@ -61,9 +48,9 @@ func main() {
 		fileExt := filepath.Ext(header.Filename)
 		// create unique filename
 		filename := u1.String() + fileExt
-		// upload file from gzip streaming file
+		// upload file
 		result, err := uploader.Upload(&s3manager.UploadInput{
-			Body:   reader,
+			Body:   file,
 			Bucket: aws.String(awsBucket),
 			Key:    aws.String(filename),
 		})
