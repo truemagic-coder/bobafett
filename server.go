@@ -61,14 +61,16 @@ func main() {
 		fileExt := filepath.Ext(header.Filename)
 		// create unique filename
 		filename := u1.String() + fileExt
+		// upload file from gzip streaming file
 		result, err := uploader.Upload(&s3manager.UploadInput{
 			Body:   reader,
 			Bucket: aws.String(awsBucket),
 			Key:    aws.String(filename),
 		})
+		// if error 400 with error else 200 with s3 url
 		if err != nil {
 			log.Println("Failed to upload", err)
-			c.JSON(400, gin.H{"error": err})
+			c.JSON(400, gin.H{"error": "there was an error uploading"})
 		} else {
 			log.Println("Successfully uploaded to", result.Location)
 			c.JSON(200, gin.H{"url": result.Location})
