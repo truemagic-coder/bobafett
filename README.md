@@ -1,6 +1,8 @@
 # Go S3 Microservice
 
-## Local Setup
+## Local
+
+### Setup
 - ` brew update `
 - ` brew install go `
 - ` brew install glide ` 
@@ -9,13 +11,11 @@
 - ` glide install ` in the local folder
 - ` go get github.com/codegangsta/gin ` to install the reloading dev server
 
-## Local
-
 ### Config
 - rename `config.bak` to `config.json`
 - add the proper keys - AWS_TOKEN is optional
 
-## Run
+### Run
 - `gin` in the local folder then POST to [localhost:3000/upload](http://localhost:3000/upload) with a file to the `file` key
 - will return either an error or a s3 url of saved file - the file is a uuid.file_extension
 
@@ -25,7 +25,7 @@
 - add proper env vars as specified in the config.bak - AWS_TOKEN is optional
 - set env var of `GIN_MODE=release`
 
-## Production
+### Run
 - `go build`
 - `./s3-micro`
 - runs on port `8080`
