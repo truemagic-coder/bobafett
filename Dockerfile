@@ -5,7 +5,7 @@ RUN \
   tar xvf glide-0.8.3-linux-amd64.tar.gz && \
   mv linux-amd64/glide /usr/bin/ && \
   apt-get update && \
-  apt-get install libmagic-dev
+  apt-get install -y libmagic-dev
 WORKDIR /go/src/github.com/bevanhunt/s3-micro
 COPY . .
 RUN glide install
