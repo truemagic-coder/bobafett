@@ -32,9 +32,3 @@
 
 ## Recommended Go Editor
 - [Visual Studio Code](https://code.visualstudio.com/) with [Go Extension](https://github.com/Microsoft/vscode-go)
-
-## TODO:
-- setup with docker
-- setup proper package on github
-- write tests?
-- add bugsnag
