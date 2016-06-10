@@ -30,3 +30,6 @@ vendor
 # for gin reload
 gin-bin
 go-gin-demo
+
+# for AWS config
+config.json
