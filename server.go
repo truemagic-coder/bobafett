@@ -75,7 +75,9 @@ func main() {
 	r.GET("/download/:key", func(c *gin.Context) {
 		// get AWS key as param
 		key := c.Param("key")
-		log.Println("key", key)
+		if key == "" {
+			c.JSON(400, gin.H{"error": "you must provide an AWS key (s3 file)"})
+		}
 		// setup file
 		file, err := os.Create(key)
 		if err != nil {
@@ -102,25 +104,27 @@ func main() {
 			if err := magicmime.Open(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR); err != nil {
 				log.Println("Failed to read mime type", err)
 				c.JSON(500, gin.H{"error": "there was an error reading the mime type"})
-			}
-			// close magicmime after route call is done
-			defer magicmime.Close()
-			// read file
-			bytes, err := ioutil.ReadFile(key)
-			// if can't read file then throw error
-			if err != nil {
-				log.Println("Failed to read file", err)
-				c.JSON(500, gin.H{"error": "there was an error opening the file"})
-			}
-			// read mimetype from file buffer
-			mimetype, err := magicmime.TypeByBuffer(bytes)
-			// if can't read mimetype then throw error
-			if err != nil {
-				log.Println("Failed to read mime type", err)
-				c.JSON(500, gin.H{"error": "there was an error reading the mime type"})
 			} else {
-				// stream data to the requestor
-				c.Data(200, mimetype, bytes)
+				// close magicmime after route call is done
+				defer magicmime.Close()
+				// read file
+				bytes, err := ioutil.ReadFile(key)
+				// if can't read file then throw error
+				if err != nil {
+					log.Println("Failed to read file", err)
+					c.JSON(500, gin.H{"error": "there was an error opening the file"})
+				} else {
+					// read mimetype from file buffer
+					mimetype, err := magicmime.TypeByBuffer(bytes)
+					// if can't read mimetype then throw error
+					if err != nil {
+						log.Println("Failed to read mime type", err)
+						c.JSON(500, gin.H{"error": "there was an error reading the mime type"})
+					} else {
+						// stream data to the requestor
+						c.Data(200, mimetype, bytes)
+					}
+				}
 			}
 		}
 	})
