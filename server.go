@@ -56,7 +56,7 @@ func main() {
 		u1 := uuid.NewV4()
 		// get file extension
 		fileExt := filepath.Ext(header.Filename)
-		// create unique filename
+		// create unique filename and folder as well
 		filename := folder + u1.String() + fileExt
 		// upload file to s3
 		result, err := uploader.Upload(&s3manager.UploadInput{
@@ -93,12 +93,13 @@ func main() {
 		// close the file and delete after route call is done
 		defer file.Close()
 		defer os.Remove(key)
+		// combine folder and key
+		filename := folder + key
 		// download file from s3
 		downloader := s3manager.NewDownloader(session.New(&aws.Config{
 			Credentials: credentials.NewStaticCredentials(awsID, awsSecret, awsToken),
 			Region:      aws.String(awsRegion),
 		}))
-		filename := folder + key
 		_, err = downloader.Download(file, &s3.GetObjectInput{
 			Bucket: aws.String(awsBucket),
 			Key:    aws.String(filename),
