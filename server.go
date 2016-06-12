@@ -43,35 +43,36 @@ func main() {
 		if err != nil {
 			log.Println("Failed to upload", err)
 			c.JSON(400, gin.H{"error": "you need to provide a file to upload"})
-		} else {
-			// get key folder
-			folder := c.PostForm("folder")
-			// setup s3 uploader
-			uploader := s3manager.NewUploader(session.New(&aws.Config{
-				Credentials: credentials.NewStaticCredentials(awsID, awsSecret, awsToken),
-				Region:      aws.String(awsRegion),
-			}))
-			// create uuid v4
-			u1 := uuid.NewV4()
-			// get file extension
-			fileExt := filepath.Ext(header.Filename)
-			// create unique filename
-			filename := folder + u1.String() + fileExt
-			// upload file to s3
-			result, err := uploader.Upload(&s3manager.UploadInput{
-				Body:   file,
-				Bucket: aws.String(awsBucket),
-				Key:    aws.String(filename),
-			})
-			// if can't download then throw error else return s3 key (url)
-			if err != nil {
-				log.Println("Failed to upload", err)
-				c.JSON(500, gin.H{"error": "there was an error uploading"})
-			} else {
-				log.Println("Successfully uploaded to", result.Location)
-				c.JSON(200, gin.H{"url": result.Location})
-			}
+			return
 		}
+		// get key folder
+		folder := c.PostForm("folder")
+		// setup s3 uploader
+		uploader := s3manager.NewUploader(session.New(&aws.Config{
+			Credentials: credentials.NewStaticCredentials(awsID, awsSecret, awsToken),
+			Region:      aws.String(awsRegion),
+		}))
+		// create uuid v4
+		u1 := uuid.NewV4()
+		// get file extension
+		fileExt := filepath.Ext(header.Filename)
+		// create unique filename
+		filename := folder + u1.String() + fileExt
+		// upload file to s3
+		result, err := uploader.Upload(&s3manager.UploadInput{
+			Body:   file,
+			Bucket: aws.String(awsBucket),
+			Key:    aws.String(filename),
+		})
+		// if can't download then throw error else return s3 key (url)
+		if err != nil {
+			log.Println("Failed to upload", err)
+			c.JSON(500, gin.H{"error": "there was an error uploading"})
+			return
+		}
+		log.Println("Successfully uploaded to", result.Location)
+		c.JSON(200, gin.H{"url": result.Location})
+		return
 	})
 
 	// download route
@@ -81,59 +82,60 @@ func main() {
 		folder := c.PostForm("folder")
 		if key == "" {
 			c.JSON(400, gin.H{"error": "you must provide a file to download"})
-		} else {
-			// setup file
-			file, err := os.Create(key)
-			if err != nil {
-				c.JSON(500, gin.H{"error": "there was an error downloading"})
-			} else {
-				// close the file and delete after route call is done
-				defer file.Close()
-				defer os.Remove(key)
-				// download file from s3
-				downloader := s3manager.NewDownloader(session.New(&aws.Config{
-					Credentials: credentials.NewStaticCredentials(awsID, awsSecret, awsToken),
-					Region:      aws.String(awsRegion),
-				}))
-				filename := folder + key
-				_, err = downloader.Download(file, &s3.GetObjectInput{
-					Bucket: aws.String(awsBucket),
-					Key:    aws.String(filename),
-				})
-				// if can't download from S3
-				if err != nil {
-					log.Println("Failed to download", err)
-					c.JSON(500, gin.H{"error": "there was an error downloading"})
-				} else {
-					// init magicmime else throw error
-					if err := magicmime.Open(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR); err != nil {
-						log.Println("Failed to read mime type", err)
-						c.JSON(500, gin.H{"error": "there was an error reading the mime type"})
-					} else {
-						// close magicmime after route call is done
-						defer magicmime.Close()
-						// read file
-						bytes, err := ioutil.ReadFile(key)
-						// if can't read file then throw error
-						if err != nil {
-							log.Println("Failed to read file", err)
-							c.JSON(500, gin.H{"error": "there was an error opening the file"})
-						} else {
-							// read mimetype from file buffer
-							mimetype, err := magicmime.TypeByBuffer(bytes)
-							// if can't read mimetype then throw error
-							if err != nil {
-								log.Println("Failed to read mime type", err)
-								c.JSON(500, gin.H{"error": "there was an error reading the mime type"})
-							} else {
-								// stream data to the requestor
-								c.Data(200, mimetype, bytes)
-							}
-						}
-					}
-				}
-			}
+			return
 		}
+		// setup file
+		file, err := os.Create(key)
+		if err != nil {
+			c.JSON(500, gin.H{"error": "there was an error downloading"})
+			return
+		}
+		// close the file and delete after route call is done
+		defer file.Close()
+		defer os.Remove(key)
+		// download file from s3
+		downloader := s3manager.NewDownloader(session.New(&aws.Config{
+			Credentials: credentials.NewStaticCredentials(awsID, awsSecret, awsToken),
+			Region:      aws.String(awsRegion),
+		}))
+		filename := folder + key
+		_, err = downloader.Download(file, &s3.GetObjectInput{
+			Bucket: aws.String(awsBucket),
+			Key:    aws.String(filename),
+		})
+		// if can't download from S3
+		if err != nil {
+			log.Println("Failed to download", err)
+			c.JSON(500, gin.H{"error": "there was an error downloading"})
+			return
+		}
+		// init magicmime else throw error
+		if err := magicmime.Open(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR); err != nil {
+			log.Println("Failed to read mime type", err)
+			c.JSON(500, gin.H{"error": "there was an error reading the mime type"})
+			return
+		}
+		// close magicmime after route call is done
+		defer magicmime.Close()
+		// read file
+		bytes, err := ioutil.ReadFile(key)
+		// if can't read file then throw error
+		if err != nil {
+			log.Println("Failed to read file", err)
+			c.JSON(500, gin.H{"error": "there was an error opening the file"})
+			return
+		}
+		// read mimetype from file buffer
+		mimetype, err := magicmime.TypeByBuffer(bytes)
+		// if can't read mimetype then throw error
+		if err != nil {
+			log.Println("Failed to read mime type", err)
+			c.JSON(500, gin.H{"error": "there was an error reading the mime type"})
+			return
+		}
+		// stream data to the requestor
+		c.Data(200, mimetype, bytes)
+		return
 	})
 
 	// run gin server
