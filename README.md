@@ -20,11 +20,11 @@
 - `gin` in the project folder
 
 #### Upload
-- POST to ` localhost:3000/upload ` with the `file` key and `folder` key
+- POST to `localhost:3000/upload` with the `file` key and `folder` key
 - will return a s3 url or an error
 
 #### Download
-- POST to ` localhost:3000/download` with the `file` key and `folder` key
+- POST to `localhost:3000/download` with the `file` key and `folder` key
 - will return a streamed file or an error
 
 ### Docker
