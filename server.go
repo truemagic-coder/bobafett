@@ -87,7 +87,7 @@ func main() {
 		// setup file
 		file, err := os.Create(key)
 		if err != nil {
-			c.JSON(500, gin.H{"error": "there was an error downloading"})
+			c.JSON(500, gin.H{"error": "there was an error creating the tmp file"})
 			return
 		}
 		// close the file and delete after route call is done
