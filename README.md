@@ -17,14 +17,15 @@
 - add the proper keys - AWS_TOKEN is optional
 
 ### Run
+- `gin` in the project folder
 
 #### Upload
-- ` gin ` in the local folder then POST to ` localhost:3000/upload `  with a file to the `file` key
-- will return either a 500 error or a 200 with s3 url (key) of saved file - the file is a uuid.file_extension
+- POST to ` localhost:3000/upload ` with the `file` key and `folder` key
+- will return a s3 url or an error
 
 #### Download
-- ` gin ` in the local folder then GET to ` localhost:3000/download/:key ` with a AWS filename (key) to the key param
-- will return either a 500 error or a 200 with the file with the proper mime-type - streaming data
+- POST to ` localhost:3000/download` with the `file` key and `folder` key
+- will return a streamed file or an error
 
 ### Docker
 - a docker file is provided that will build the project - you can use a config or set ENV VARS at your discretion
