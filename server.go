@@ -1,18 +1,14 @@
 package main
 
 import (
-	"io/ioutil"
+	"bytes"
+	"io"
 	"log"
-	"os"
 	"path/filepath"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/gin-gonic/gin"
 	"github.com/rakyll/magicmime"
+	"github.com/rlmcpherson/s3gof3r"
 	"github.com/satori/go.uuid"
 	"github.com/spf13/viper"
 )
@@ -30,11 +26,15 @@ func main() {
 		viper.AutomaticEnv()
 	}
 	// setup keys from config file or ENV VARS
-	awsID := viper.GetString("AWS_ID")
-	awsSecret := viper.GetString("AWS_SECRET")
-	awsBucket := viper.GetString("AWS_BUCKET")
-	awsRegion := viper.GetString("AWS_REGION")
-	awsToken := viper.GetString("AWS_TOKEN")
+	awsID := viper.GetString("AWS_ACCESS_KEY_ID")
+	awsSecret := viper.GetString("AWS_SECRET_ACCESS_KEY")
+	s3Bucket := viper.GetString("S3_BUCKET")
+	s3Domain := viper.GetString("S3_DOMAIN")
+	awsToken := viper.GetString("AWS_SECURITY_TOKEN")
+
+	keys := s3gof3r.Keys{AccessKey: awsID, SecretKey: awsSecret, SecurityToken: awsToken}
+	s3 := s3gof3r.S3{Keys: keys, Domain: s3Domain}
+	bucket := s3.Bucket(s3Bucket)
 
 	// upload route
 	r.POST("/upload", func(c *gin.Context) {
@@ -47,31 +47,31 @@ func main() {
 		}
 		// get key folder
 		folder := c.PostForm("folder")
-		// setup s3 uploader
-		uploader := s3manager.NewUploader(session.New(&aws.Config{
-			Credentials: credentials.NewStaticCredentials(awsID, awsSecret, awsToken),
-			Region:      aws.String(awsRegion),
-		}))
 		// create uuid v4
 		u1 := uuid.NewV4()
 		// get file extension
 		fileExt := filepath.Ext(header.Filename)
 		// create unique filename and folder as well
 		filename := folder + u1.String() + fileExt
-		// upload file to s3
-		result, err := uploader.Upload(&s3manager.UploadInput{
-			Body:   file,
-			Bucket: aws.String(awsBucket),
-			Key:    aws.String(filename),
-		})
-		// if can't download then throw error else return s3 key (url)
+		// Open a PutWriter for upload
+		w, err := bucket.PutWriter(filename, nil, nil)
 		if err != nil {
 			log.Println("Failed to upload", err)
 			c.JSON(500, gin.H{"error": "there was an error uploading"})
 			return
 		}
-		log.Println("Successfully uploaded to", result.Location)
-		c.JSON(200, gin.H{"url": result.Location})
+		if _, err = io.Copy(w, file); err != nil { // Copy into S3
+			log.Println("Failed to upload", err)
+			c.JSON(500, gin.H{"error": "there was an error uploading"})
+			return
+		}
+		if err = w.Close(); err != nil {
+			log.Println("Failed to upload", err)
+			c.JSON(500, gin.H{"error": "there was an error uploading"})
+			return
+		}
+		log.Println("Successfully uploaded to", filename)
+		c.JSON(200, gin.H{"file": filename})
 		return
 	})
 
@@ -84,28 +84,19 @@ func main() {
 			c.JSON(400, gin.H{"error": "you must provide a file to download"})
 			return
 		}
-		// setup file
-		file, err := os.Create(key)
-		if err != nil {
-			c.JSON(500, gin.H{"error": "there was an error creating the tmp file"})
-			return
-		}
-		// close the file and delete after route call is done
-		defer file.Close()
-		defer os.Remove(key)
 		// combine folder and key
 		filename := folder + key
-		// download file from s3
-		downloader := s3manager.NewDownloader(session.New(&aws.Config{
-			Credentials: credentials.NewStaticCredentials(awsID, awsSecret, awsToken),
-			Region:      aws.String(awsRegion),
-		}))
-		_, err = downloader.Download(file, &s3.GetObjectInput{
-			Bucket: aws.String(awsBucket),
-			Key:    aws.String(filename),
-		})
+		r, _, err := bucket.GetReader(filename, nil)
+		defer r.Close()
 		// if can't download from S3
 		if err != nil {
+			log.Println("Failed to download", err)
+			c.JSON(500, gin.H{"error": "there was an error downloading"})
+			return
+		}
+		// stream to bytes buffer
+		s3Buffer := new(bytes.Buffer)
+		if _, err = io.Copy(s3Buffer, r); err != nil {
 			log.Println("Failed to download", err)
 			c.JSON(500, gin.H{"error": "there was an error downloading"})
 			return
@@ -118,16 +109,8 @@ func main() {
 		}
 		// close magicmime after route call is done
 		defer magicmime.Close()
-		// read file
-		bytes, err := ioutil.ReadFile(key)
-		// if can't read file then throw error
-		if err != nil {
-			log.Println("Failed to read file", err)
-			c.JSON(500, gin.H{"error": "there was an error opening the file"})
-			return
-		}
 		// read mimetype from file buffer
-		mimetype, err := magicmime.TypeByBuffer(bytes)
+		mimetype, err := magicmime.TypeByBuffer(s3Buffer.Bytes())
 		// if can't read mimetype then throw error
 		if err != nil {
 			log.Println("Failed to read mime type", err)
@@ -135,7 +118,7 @@ func main() {
 			return
 		}
 		// stream data to the requestor
-		c.Data(200, mimetype, bytes)
+		c.Data(200, mimetype, s3Buffer.Bytes())
 		return
 	})
 

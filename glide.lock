@@ -1,33 +1,6 @@
-hash: 971130baabb1d562577f84de57a28605dc8591997842f5aa0b343ac2b6bf4b6d
-updated: 2016-06-10T14:01:44.468711455-07:00
+hash: d5e1299ba06d6576468c9620edac5276b57980a00355e3a3bd115e7e33d32958
+updated: 2016-06-17T10:31:46.502045157-07:00
 imports:
-- name: github.com/aws/aws-sdk-go
-  version: 64c371362a7b5ecafa2d7cdf90d19aba7343ae02
-  subpackages:
-  - aws
-  - aws/credentials
-  - aws/session
-  - service/s3
-  - service/s3/s3manager
-  - aws/awserr
-  - aws/client
-  - aws/corehandlers
-  - aws/defaults
-  - aws/request
-  - private/endpoints
-  - aws/awsutil
-  - aws/client/metadata
-  - private/protocol
-  - private/protocol/restxml
-  - private/signer/v4
-  - private/waiter
-  - service/s3/s3iface
-  - aws/credentials/ec2rolecreds
-  - aws/ec2metadata
-  - private/protocol/query
-  - private/protocol/rest
-  - private/protocol/xml/xmlutil
-  - private/protocol/query/queryutil
 - name: github.com/BurntSushi/toml
   version: f0aeabca5a127c4078abb8c8d64298b147264b55
 - name: github.com/fsnotify/fsnotify
@@ -37,8 +10,6 @@ imports:
   subpackages:
   - binding
   - render
-- name: github.com/go-ini/ini
-  version: 72ba3e6b9e6b87e0c74c9a7a4dc86e8dd8ba4355
 - name: github.com/golang/protobuf
   version: 2402d76f3d41f928c7902a765dfc872356dd3aad
   subpackages:
@@ -54,8 +25,6 @@ imports:
   - hcl/strconv
   - json/scanner
   - json/token
-- name: github.com/jmespath/go-jmespath
-  version: 0b12d6b521d83fc7f755e7cfc1b1fbdd35a01a74
 - name: github.com/magiconair/properties
   version: c265cfa48dda6474e208715ca93e987829f572f8
 - name: github.com/manucorporat/sse
@@ -64,6 +33,8 @@ imports:
   version: d2dd0262208475919e1a362f675cfc0e7c10e905
 - name: github.com/rakyll/magicmime
   version: df5592fbfc25b51c18b5671787d8385879d15c0d
+- name: github.com/rlmcpherson/s3gof3r
+  version: 39f5507f61031141057f3f880d9fb9eb97b8afd7
 - name: github.com/satori/go.uuid
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
 - name: github.com/spf13/cast
