@@ -32,3 +32,6 @@
 
 ## Recommended Go Editor
 - [Visual Studio Code](https://code.visualstudio.com/) with [Go Extension](https://github.com/Microsoft/vscode-go)
+
+## TODO
+- replace aws-sdk-go with s3gof3r
