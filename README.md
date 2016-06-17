@@ -14,7 +14,7 @@
 
 ### Config
 - rename `config.bak` to `config.json`
-- add the proper keys - AWS_TOKEN is optional
+- add the proper keys - AWS_SECRET_TOKEN is optional
 
 ### Run
 - `gin` in the project folder
@@ -34,4 +34,4 @@
 - [Visual Studio Code](https://code.visualstudio.com/) with [Go Extension](https://github.com/Microsoft/vscode-go)
 
 ## TODO
-- replace aws-sdk-go with s3gof3r
+- write tests
