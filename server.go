@@ -53,23 +53,26 @@ func main() {
 		fileExt := filepath.Ext(header.Filename)
 		// create unique filename and folder as well
 		filename := folder + u1.String() + fileExt
-		// Open a PutWriter for upload
+		// open a PutWriter for upload
 		w, err := bucket.PutWriter(filename, nil, nil)
 		if err != nil {
 			log.Println("Failed to upload", err)
 			c.JSON(500, gin.H{"error": "there was an error uploading"})
 			return
 		}
-		if _, err = io.Copy(w, file); err != nil { // Copy into S3
+		// copy into S3
+		if _, err = io.Copy(w, file); err != nil {
 			log.Println("Failed to upload", err)
 			c.JSON(500, gin.H{"error": "there was an error uploading"})
 			return
 		}
+		// close writer
 		if err = w.Close(); err != nil {
 			log.Println("Failed to upload", err)
 			c.JSON(500, gin.H{"error": "there was an error uploading"})
 			return
 		}
+		// success
 		log.Println("Successfully uploaded to", filename)
 		c.JSON(200, gin.H{"file": filename})
 		return
