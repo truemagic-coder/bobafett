@@ -32,6 +32,3 @@
 
 ## Recommended Go Editor
 - [Visual Studio Code](https://code.visualstudio.com/) with [Go Extension](https://github.com/Microsoft/vscode-go)
-
-## TODO
-- write tests
