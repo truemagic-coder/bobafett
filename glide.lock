@@ -1,12 +1,10 @@
-hash: 8b0221f0000bd6ac88aa9ad7d554dd04673752832e8a9b21d5bfb2e2831946a2
-updated: 2016-06-20T13:12:38.234018856-07:00
+hash: c1a8ca53fcec7d4bb011caa8437328478701eab5506867d65f7986e1dd4b45ce
+updated: 2016-06-20T15:15:46.476277666-07:00
 imports:
 - name: github.com/BurntSushi/toml
   version: f0aeabca5a127c4078abb8c8d64298b147264b55
 - name: github.com/franela/goblin
   version: efa9910a3ea4ccb7ee4b977571318af2e51ba05f
-- name: github.com/franela/goreq
-  version: fc08df6ca2d4a0d1a5ae24739aa268863943e723
 - name: github.com/fsnotify/fsnotify
   version: 30411dbcefb7a1da7e84f75530ad3abe4011b4f8
 - name: github.com/gin-gonic/gin

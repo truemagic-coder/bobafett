@@ -7,4 +7,3 @@ import:
 - package: github.com/rlmcpherson/s3gof3r
 - package: github.com/franela/goblin
 - package: github.com/prashantv/gostub
-- package: github.com/franela/goreq
