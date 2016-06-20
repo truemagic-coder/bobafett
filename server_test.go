@@ -13,7 +13,6 @@ import (
 	"testing"
 
 	. "github.com/franela/goblin"
-	"github.com/franela/goreq"
 	"github.com/gin-gonic/gin"
 	"github.com/prashantv/gostub"
 	"github.com/rlmcpherson/s3gof3r"
@@ -73,11 +72,7 @@ func Test(t *testing.T) {
 		g.Describe("/:", func() {
 			g.It("route / should have proper body", func() {
 
-				request := goreq.Request{
-					Uri:    "/",
-					Method: "GET",
-				}
-				req, err := request.NewRequest()
+				req, err := http.NewRequest("GET", "/", nil)
 				if err != nil {
 					fmt.Println(err)
 				}
