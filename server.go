@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"log"
+	"mime/multipart"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
@@ -13,9 +14,85 @@ import (
 	"github.com/spf13/viper"
 )
 
-func main() {
-	// create gin server
-	r := gin.Default()
+// assign function to memory for testing
+var s3Downloader = s3Download
+
+// download from s3
+func s3Download(bucket *s3gof3r.Bucket, filename string) (*bytes.Buffer, error) {
+	// stream to bytes buffer
+	s3Buffer := new(bytes.Buffer)
+	// download file from s3
+	r, _, err := bucket.GetReader(filename, nil)
+	// if can't download from S3
+	if err != nil {
+		return nil, err
+	}
+	// copy s3 download into buffer
+	if _, err = io.Copy(s3Buffer, r); err != nil {
+		return nil, err
+	}
+	return s3Buffer, nil
+}
+
+func s3DownloadErr(err error, c *gin.Context) {
+	log.Println("Failed to download", err)
+	c.JSON(500, gin.H{"error": "there was an error downloading"})
+	return
+}
+
+func mimeTypeErr(err error, c *gin.Context) {
+	log.Println("Failed to read mime type", err)
+	c.JSON(500, gin.H{"error": "there was an error reading the mime type"})
+	return
+}
+
+var getMimeTyper = getMimeType
+
+func getMimeType(s3Buffer *bytes.Buffer) (string, error) {
+	// init magicmime else throw error
+	if err := magicmime.Open(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR); err != nil {
+		return "", err
+	}
+	// close magicmime after route call is done
+	defer magicmime.Close()
+	// read mimetype from file buffer
+	return magicmime.TypeByBuffer(s3Buffer.Bytes())
+}
+
+func s3UploadErr(err error, c *gin.Context) {
+	log.Println("Failed to upload", err)
+	c.JSON(500, gin.H{"error": "there was an error uploading"})
+	return
+}
+
+var s3Uploader = s3Upload
+
+func s3Upload(bucket *s3gof3r.Bucket, filename string, file multipart.File, c *gin.Context) error {
+	w, err := bucket.PutWriter(filename, nil, nil)
+	if _, err = io.Copy(w, file); err != nil {
+		return err
+	}
+	if err = w.Close(); err != nil {
+		return err
+	}
+	return nil
+}
+
+var uuidGenerator = uuidGenerate
+
+func uuidGenerate() string {
+	u1 := uuid.NewV4()
+	return u1.String()
+}
+
+func createUploadFilename(header *multipart.FileHeader, folder string) string {
+	fileExt := filepath.Ext(header.Filename)
+	return folder + uuidGenerator() + fileExt
+}
+
+// GinEngine is gin router.
+func GinEngine() *gin.Engine {
+	r := gin.New()
 
 	// look for config file
 	viper.SetConfigName("config")
@@ -36,6 +113,12 @@ func main() {
 	s3 := s3gof3r.S3{Keys: keys, Domain: s3Domain}
 	bucket := s3.Bucket(s3Bucket)
 
+	// route to ping
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{"url": "hello"})
+		return
+	})
+
 	// upload route
 	r.POST("/upload", func(c *gin.Context) {
 		// get file upload
@@ -47,29 +130,11 @@ func main() {
 		}
 		// get key folder
 		folder := c.PostForm("folder")
-		// create uuid v4
-		u1 := uuid.NewV4()
-		// get file extension
-		fileExt := filepath.Ext(header.Filename)
-		// create unique filename and folder as well
-		filename := folder + u1.String() + fileExt
-		// open a PutWriter for upload
-		w, err := bucket.PutWriter(filename, nil, nil)
-		if err != nil {
-			log.Println("Failed to upload", err)
-			c.JSON(500, gin.H{"error": "there was an error uploading"})
-			return
-		}
-		// copy into S3
-		if _, err = io.Copy(w, file); err != nil {
-			log.Println("Failed to upload", err)
-			c.JSON(500, gin.H{"error": "there was an error uploading"})
-			return
-		}
-		// close writer
-		if err = w.Close(); err != nil {
-			log.Println("Failed to upload", err)
-			c.JSON(500, gin.H{"error": "there was an error uploading"})
+		// create filename
+		filename := createUploadFilename(header, folder)
+		// upload file to S3
+		if err := s3Uploader(bucket, filename, file, c); err != nil {
+			s3UploadErr(err, c)
 			return
 		}
 		// success
@@ -81,50 +146,33 @@ func main() {
 	// download route
 	r.POST("/download", func(c *gin.Context) {
 		// get AWS key as param
-		key := c.PostForm("file")
-		folder := c.PostForm("folder")
-		if key == "" {
+		key, ok := c.GetPostForm("file")
+		if ok == false {
 			c.JSON(400, gin.H{"error": "you must provide a file to download"})
 			return
 		}
+		folder := c.PostForm("folder")
 		// combine folder and key
 		filename := folder + key
-		r, _, err := bucket.GetReader(filename, nil)
-		defer r.Close()
-		// if can't download from S3
+		s3Buffer, err := s3Downloader(bucket, filename)
 		if err != nil {
-			log.Println("Failed to download", err)
-			c.JSON(500, gin.H{"error": "there was an error downloading"})
+			s3DownloadErr(err, c)
 			return
 		}
-		// stream to bytes buffer
-		s3Buffer := new(bytes.Buffer)
-		if _, err = io.Copy(s3Buffer, r); err != nil {
-			log.Println("Failed to download", err)
-			c.JSON(500, gin.H{"error": "there was an error downloading"})
-			return
-		}
-		// init magicmime else throw error
-		if err := magicmime.Open(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR); err != nil {
-			log.Println("Failed to read mime type", err)
-			c.JSON(500, gin.H{"error": "there was an error reading the mime type"})
-			return
-		}
-		// close magicmime after route call is done
-		defer magicmime.Close()
-		// read mimetype from file buffer
-		mimetype, err := magicmime.TypeByBuffer(s3Buffer.Bytes())
+		mimeType, err := getMimeTyper(s3Buffer)
 		// if can't read mimetype then throw error
 		if err != nil {
-			log.Println("Failed to read mime type", err)
-			c.JSON(500, gin.H{"error": "there was an error reading the mime type"})
+			mimeTypeErr(err, c)
 			return
 		}
 		// stream data to the requestor
-		c.Data(200, mimetype, s3Buffer.Bytes())
+		c.Data(200, mimeType, s3Buffer.Bytes())
 		return
 	})
 
-	// run gin server
-	r.Run()
+	return r
+}
+
+func main() {
+	GinEngine().Run()
 }
