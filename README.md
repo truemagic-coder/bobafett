@@ -27,6 +27,9 @@
 - POST to `localhost:3000/download` with the `file` key and `folder` key
 - will return a streamed file or an error
 
+#### Tests
+- `go test` in the project folder
+
 ### Docker
 - a docker file is provided that will build the project - you can use a config or set ENV VARS at your discretion
 
