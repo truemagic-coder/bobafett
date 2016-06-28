@@ -19,22 +19,6 @@ import (
 	"github.com/rlmcpherson/s3gof3r"
 )
 
-// create body writer POST
-func postForm(uri string, params map[string]string) (*http.Request, error) {
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-
-	for key, val := range params {
-		_ = writer.WriteField(key, val)
-	}
-
-	defer writer.Close()
-
-	req, err := http.NewRequest("POST", uri, body)
-	req.Header.Add("Content-Type", writer.FormDataContentType())
-	return req, err
-}
-
 func Test(t *testing.T) {
 	g := Goblin(t)
 	timeout := 10 * time.Second
@@ -144,14 +128,17 @@ func Test(t *testing.T) {
 				params := map[string]string{
 					"test": "test.png",
 				}
-				req, err := postForm("/download", params)
+				req, err := gorex.Request{
+					URI:     "/download",
+					Timeout: timeout,
+				}.PostForm(params)
 				if err != nil {
 					fmt.Println(err)
 				}
 				resp := httptest.NewRecorder()
 				// router and upload
 				testRouter := GinEngine()
-				testRouter.ServeHTTP(resp, req)
+				testRouter.ServeHTTP(resp, req.Req)
 				// assert error
 				g.Assert(resp.Body.String()).Equal("{\"error\":\"you must provide a file to download\"}\n")
 				// assert 400
@@ -166,13 +153,16 @@ func Test(t *testing.T) {
 				params := map[string]string{
 					"file": "test.png",
 				}
-				req, err := postForm("/download", params)
+				req, err := gorex.Request{
+					URI:     "/download",
+					Timeout: timeout,
+				}.PostForm(params)
 				if err != nil {
 					fmt.Println(err)
 				}
 				resp := httptest.NewRecorder()
 				testRouter := GinEngine()
-				testRouter.ServeHTTP(resp, req)
+				testRouter.ServeHTTP(resp, req.Req)
 				// assert error
 				g.Assert(resp.Body.String()).Equal("{\"error\":\"there was an error downloading\"}\n")
 				// assert 500
@@ -191,13 +181,16 @@ func Test(t *testing.T) {
 				params := map[string]string{
 					"file": "test.png",
 				}
-				req, err := postForm("/download", params)
+				req, err := gorex.Request{
+					URI:     "/download",
+					Timeout: timeout,
+				}.PostForm(params)
 				if err != nil {
 					fmt.Println(err)
 				}
 				resp := httptest.NewRecorder()
 				testRouter := GinEngine()
-				testRouter.ServeHTTP(resp, req)
+				testRouter.ServeHTTP(resp, req.Req)
 				// assert error
 				g.Assert(resp.Body.String()).Equal("{\"error\":\"there was an error reading the mime type\"}\n")
 				// assert 500
@@ -216,13 +209,16 @@ func Test(t *testing.T) {
 				params := map[string]string{
 					"file": "test.png",
 				}
-				req, err := postForm("/download", params)
+				req, err := gorex.Request{
+					URI:     "/download",
+					Timeout: timeout,
+				}.PostForm(params)
 				if err != nil {
 					fmt.Println(err)
 				}
 				resp := httptest.NewRecorder()
 				testRouter := GinEngine()
-				testRouter.ServeHTTP(resp, req)
+				testRouter.ServeHTTP(resp, req.Req)
 				// assert file stream
 				g.Assert(resp.Body).Equal(new(bytes.Buffer))
 				// assert 200
