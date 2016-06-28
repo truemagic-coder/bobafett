@@ -4,16 +4,15 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"path/filepath"
 	"testing"
+	"time"
 
+	"github.com/bevanhunt/gorex"
 	. "github.com/franela/goblin"
 	"github.com/gin-gonic/gin"
 	"github.com/prashantv/gostub"
@@ -36,37 +35,9 @@ func postForm(uri string, params map[string]string) (*http.Request, error) {
 	return req, err
 }
 
-// Creates a new file upload http request with optional extra params
-func newfileUploadRequest(uri string, params map[string]string, paramName, path string) (*http.Request, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-	part, err := writer.CreateFormFile(paramName, filepath.Base(path))
-	if err != nil {
-		return nil, err
-	}
-	_, err = io.Copy(part, file)
-
-	for key, val := range params {
-		_ = writer.WriteField(key, val)
-	}
-	err = writer.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", uri, body)
-	req.Header.Add("Content-Type", writer.FormDataContentType())
-	return req, err
-}
-
 func Test(t *testing.T) {
 	g := Goblin(t)
+	timeout := 10 * time.Second
 	g.Describe("Request Specs:", func() {
 		g.Before(func() {
 			// set to release mode to hide debug warning
@@ -102,7 +73,10 @@ func Test(t *testing.T) {
 				defer s3Stub.Reset()
 
 				extraParams := map[string]string{}
-				req, err := newfileUploadRequest("/upload", extraParams, "file", "test.png")
+				req, err := gorex.Request{
+					URI:     "/upload",
+					Timeout: timeout,
+				}.PostFormFileDisk(extraParams, "file", "test.png")
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -110,7 +84,7 @@ func Test(t *testing.T) {
 				resp := httptest.NewRecorder()
 				// router and upload
 				testRouter := GinEngine()
-				testRouter.ServeHTTP(resp, req)
+				testRouter.ServeHTTP(resp, req.Req)
 				// assert filename
 				g.Assert(resp.Body.String()).Equal("{\"file\":\"test.png\"}\n")
 				// assert 200
@@ -128,7 +102,10 @@ func Test(t *testing.T) {
 				defer s3Stub.Reset()
 
 				extraParams := map[string]string{}
-				req, err := newfileUploadRequest("/upload", extraParams, "file", "test.png")
+				req, err := gorex.Request{
+					URI:     "/upload",
+					Timeout: timeout,
+				}.PostFormFileDisk(extraParams, "file", "test.png")
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -136,7 +113,7 @@ func Test(t *testing.T) {
 				resp := httptest.NewRecorder()
 				// router and upload
 				testRouter := GinEngine()
-				testRouter.ServeHTTP(resp, req)
+				testRouter.ServeHTTP(resp, req.Req)
 				// assert error
 				g.Assert(resp.Body.String()).Equal("{\"error\":\"there was an error uploading\"}\n")
 				// assert 500
@@ -144,7 +121,10 @@ func Test(t *testing.T) {
 			})
 			g.It("route /upload should return 400/error on no file", func() {
 				extraParams := map[string]string{}
-				req, err := newfileUploadRequest("/upload", extraParams, "test", "test.png")
+				req, err := gorex.Request{
+					URI:     "/upload",
+					Timeout: timeout,
+				}.PostFormFileDisk(extraParams, "missing_file", "test.png")
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -152,7 +132,7 @@ func Test(t *testing.T) {
 				resp := httptest.NewRecorder()
 				// router and upload
 				testRouter := GinEngine()
-				testRouter.ServeHTTP(resp, req)
+				testRouter.ServeHTTP(resp, req.Req)
 				// assert error
 				g.Assert(resp.Body.String()).Equal("{\"error\":\"you need to provide a file to upload\"}\n")
 				// assert 500
