@@ -24,7 +24,7 @@
 - will return a s3 url or an error
 
 #### Download
-- POST to `localhost:3000/download` with the `file` key and `folder` key
+- POST to `localhost:3000/download` with the `file` key
 - will return a streamed file or an error
 
 #### Tests

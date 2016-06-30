@@ -151,10 +151,7 @@ func GinEngine() *gin.Engine {
 			c.JSON(400, gin.H{"error": "you must provide a file to download"})
 			return
 		}
-		folder := c.PostForm("folder")
-		// combine folder and key
-		filename := folder + key
-		s3Buffer, err := s3Downloader(bucket, filename)
+		s3Buffer, err := s3Downloader(bucket, key)
 		if err != nil {
 			s3DownloadErr(err, c)
 			return
