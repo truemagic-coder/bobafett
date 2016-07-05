@@ -8,3 +8,4 @@ import:
 - package: github.com/franela/goblin
 - package: github.com/prashantv/gostub
 - package: github.com/bevanhunt/gorex
+- package: github.com/itsjamie/gin-cors

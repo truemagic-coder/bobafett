@@ -1,14 +1,14 @@
-hash: f759314b5483c52a1e37d2402e45bafa47a1fb38b46fc5e412d143a4ef527b5e
-updated: 2016-06-28T15:48:01.45748456-07:00
+hash: 9c94d014f8e0d94712c266236256522c8da20fc605b67d1ddf9b04375fa72be4
+updated: 2016-07-05T14:25:32.383489644-07:00
 imports:
 - name: github.com/bevanhunt/gorex
-  version: 3e391cb0c79e3a3ec0876c97bd474ae508133440
+  version: 5a2d8f9ee7745e498bf58caed14ef291a3e45337
 - name: github.com/BurntSushi/toml
   version: f0aeabca5a127c4078abb8c8d64298b147264b55
 - name: github.com/franela/goblin
   version: efa9910a3ea4ccb7ee4b977571318af2e51ba05f
 - name: github.com/fsnotify/fsnotify
-  version: 51d3cc5e20d962cf0048c901c4ab3ddf0d7f7083
+  version: a8a77c9133d2d6fd8334f3260d06f60e8d80a5fb
 - name: github.com/gin-gonic/gin
   version: f931d1ea80ae95a6fc739213cdd9399bd2967fb6
   subpackages:
@@ -29,8 +29,10 @@ imports:
   - hcl/strconv
   - json/scanner
   - json/token
+- name: github.com/itsjamie/gin-cors
+  version: 97b4a9da79331dfa2b6d35f4cdd1e50f5148859c
 - name: github.com/magiconair/properties
-  version: c265cfa48dda6474e208715ca93e987829f572f8
+  version: e2f061ecfdaca9f35b2e2c12346ffc526f138137
 - name: github.com/manucorporat/sse
   version: ee05b128a739a0fb76c7ebd3ae4810c1de808d6d
 - name: github.com/mitchellh/mapstructure
@@ -56,7 +58,7 @@ imports:
   subpackages:
   - context
 - name: golang.org/x/sys
-  version: 62bee037599929a6e9146f29d10dd5208c43507d
+  version: a408501be4d17ee978c04a618e7a1b22af058c0e
   subpackages:
   - unix
 - name: gopkg.in/go-playground/validator.v8

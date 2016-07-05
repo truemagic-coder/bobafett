@@ -7,8 +7,10 @@ import (
 	"mime/multipart"
 	"net/url"
 	"path/filepath"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/itsjamie/gin-cors"
 	"github.com/rakyll/magicmime"
 	"github.com/rlmcpherson/s3gof3r"
 	"github.com/satori/go.uuid"
@@ -94,6 +96,17 @@ func createUploadFilename(header *multipart.FileHeader, folder string) string {
 // GinEngine is gin router.
 func GinEngine() *gin.Engine {
 	r := gin.New()
+
+	// use cors
+	r.Use(cors.Middleware(cors.Config{
+		Origins:         "*",
+		Methods:         "GET, PUT, POST, DELETE",
+		RequestHeaders:  "Origin, Authorization, Content-Type",
+		ExposedHeaders:  "",
+		MaxAge:          50 * time.Second,
+		Credentials:     true,
+		ValidateHeaders: false,
+	}))
 
 	// look for config file
 	viper.SetConfigName("config")
