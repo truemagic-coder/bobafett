@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"mime/multipart"
+	"net/url"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
@@ -144,11 +145,16 @@ func GinEngine() *gin.Engine {
 	})
 
 	// download route
-	r.POST("/download", func(c *gin.Context) {
+	r.GET("/download", func(c *gin.Context) {
 		// get AWS key as param
-		key, ok := c.GetPostForm("file")
+		key, ok := c.GetQuery("file")
 		if ok == false {
 			c.JSON(400, gin.H{"error": "you must provide a file to download"})
+			return
+		}
+		key, err := url.QueryUnescape(key)
+		if err != nil {
+			c.JSON(500, gin.H{"error": "file key could not be unescaped"})
 			return
 		}
 		s3Buffer, err := s3Downloader(bucket, key)
