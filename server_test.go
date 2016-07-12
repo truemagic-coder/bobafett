@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bevanhunt/gorex"
+	"github.com/bevanhunt/gowrex"
 	. "github.com/franela/goblin"
 	"github.com/gin-gonic/gin"
 	"github.com/prashantv/gostub"
@@ -57,7 +57,7 @@ func Test(t *testing.T) {
 				defer s3Stub.Reset()
 
 				extraParams := map[string]string{}
-				req, err := gorex.Request{
+				req, err := gowrex.Request{
 					URI:     "/upload",
 					Timeout: timeout,
 				}.PostFormFileDisk(extraParams, "file", "test.png")
@@ -86,7 +86,7 @@ func Test(t *testing.T) {
 				defer s3Stub.Reset()
 
 				extraParams := map[string]string{}
-				req, err := gorex.Request{
+				req, err := gowrex.Request{
 					URI:     "/upload",
 					Timeout: timeout,
 				}.PostFormFileDisk(extraParams, "file", "test.png")
@@ -105,7 +105,7 @@ func Test(t *testing.T) {
 			})
 			g.It("route /upload should return 400/error on no file", func() {
 				extraParams := map[string]string{}
-				req, err := gorex.Request{
+				req, err := gowrex.Request{
 					URI:     "/upload",
 					Timeout: timeout,
 				}.PostFormFileDisk(extraParams, "missing_file", "test.png")
@@ -125,13 +125,10 @@ func Test(t *testing.T) {
 		})
 		g.Describe("/download:", func() {
 			g.It("route /download should return 400/error on no file", func() {
-				params := map[string]string{
-					"test": "test.png",
-				}
-				req, err := gorex.Request{
-					URI:     "/download",
+				req, err := gowrex.Request{
+					URI:     "/download?filex=test.png",
 					Timeout: timeout,
-				}.PostForm(params)
+				}.Get()
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -150,13 +147,10 @@ func Test(t *testing.T) {
 					return new(bytes.Buffer), errors.New("cannot download from s3")
 				})
 				defer s3DownloadStub.Reset()
-				params := map[string]string{
-					"file": "test.png",
-				}
-				req, err := gorex.Request{
-					URI:     "/download",
+				req, err := gowrex.Request{
+					URI:     "/download?file=test.png",
 					Timeout: timeout,
-				}.PostForm(params)
+				}.Get()
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -178,13 +172,10 @@ func Test(t *testing.T) {
 					return "", errors.New("mime type reading failed")
 				})
 				defer getMimeTypeStub.Reset()
-				params := map[string]string{
-					"file": "test.png",
-				}
-				req, err := gorex.Request{
-					URI:     "/download",
+				req, err := gowrex.Request{
+					URI:     "/download?file=test.png",
 					Timeout: timeout,
-				}.PostForm(params)
+				}.Get()
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -206,13 +197,10 @@ func Test(t *testing.T) {
 					return "image/png", nil
 				})
 				defer getMimeTypeStub.Reset()
-				params := map[string]string{
-					"file": "test.png",
-				}
-				req, err := gorex.Request{
-					URI:     "/download",
+				req, err := gowrex.Request{
+					URI:     "/download?file=test.png",
 					Timeout: timeout,
-				}.PostForm(params)
+				}.Get()
 				if err != nil {
 					fmt.Println(err)
 				}

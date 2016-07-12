@@ -1,10 +1,10 @@
-hash: 9c94d014f8e0d94712c266236256522c8da20fc605b67d1ddf9b04375fa72be4
-updated: 2016-07-05T14:25:32.383489644-07:00
+hash: 040db3f6ed5bde989e00a0baf61dc556dacd41324fdcaff8dfe2547904247d21
+updated: 2016-07-12T10:06:41.033611817-07:00
 imports:
-- name: github.com/bevanhunt/gorex
-  version: 5a2d8f9ee7745e498bf58caed14ef291a3e45337
+- name: github.com/bevanhunt/gowrex
+  version: 9a156bf8614257768af8a9d77a0df4dc7587efa1
 - name: github.com/BurntSushi/toml
-  version: f0aeabca5a127c4078abb8c8d64298b147264b55
+  version: bec2dacf4b590d26237cfebff4471e21ce543494
 - name: github.com/franela/goblin
   version: efa9910a3ea4ccb7ee4b977571318af2e51ba05f
 - name: github.com/fsnotify/fsnotify
@@ -19,7 +19,7 @@ imports:
   subpackages:
   - proto
 - name: github.com/hashicorp/hcl
-  version: 61f5143284c041681f76a5b63efcb232aaa94737
+  version: d8c773c4cba11b11539e3d45f93daeaa5dcf1fa1
   subpackages:
   - hcl/ast
   - hcl/parser
