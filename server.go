@@ -3,18 +3,25 @@ package main
 import (
 	"bytes"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/url"
+	"os"
 	"path/filepath"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/itsjamie/gin-cors"
+	"github.com/op/go-logging"
 	"github.com/rakyll/magicmime"
 	"github.com/rlmcpherson/s3gof3r"
 	"github.com/satori/go.uuid"
 	"github.com/spf13/viper"
+)
+
+// setup logging
+var log = logging.MustGetLogger("example")
+var format = logging.MustStringFormatter(
+	`%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{id:03x}%{color:reset} %{message}`,
 )
 
 // assign function to memory for testing
@@ -38,13 +45,13 @@ func s3Download(bucket *s3gof3r.Bucket, filename string) (*bytes.Buffer, error) 
 }
 
 func s3DownloadErr(err error, c *gin.Context) {
-	log.Println("Failed to download", err)
+	log.Warning("Failed to download", err)
 	c.JSON(500, gin.H{"error": "there was an error downloading"})
 	return
 }
 
 func mimeTypeErr(err error, c *gin.Context) {
-	log.Println("Failed to read mime type", err)
+	log.Warning("Failed to read mime type", err)
 	c.JSON(500, gin.H{"error": "there was an error reading the mime type"})
 	return
 }
@@ -63,7 +70,7 @@ func getMimeType(s3Buffer *bytes.Buffer) (string, error) {
 }
 
 func s3UploadErr(err error, c *gin.Context) {
-	log.Println("Failed to upload", err)
+	log.Warning("Failed to upload", err)
 	c.JSON(500, gin.H{"error": "there was an error uploading"})
 	return
 }
@@ -95,6 +102,12 @@ func createUploadFilename(header *multipart.FileHeader, folder string) string {
 
 // GinEngine is gin router.
 func GinEngine() *gin.Engine {
+
+	// setup logging
+	backend1 := logging.NewLogBackend(os.Stderr, "", 0)
+	backend1Formatter := logging.NewBackendFormatter(backend1, format)
+	logging.SetBackend(backend1Formatter)
+
 	r := gin.New()
 
 	// use cors
@@ -138,7 +151,7 @@ func GinEngine() *gin.Engine {
 		// get file upload
 		file, header, err := c.Request.FormFile("file")
 		if err != nil {
-			log.Println("Failed to upload", err)
+			log.Warning("Failed to upload", err)
 			c.JSON(400, gin.H{"error": "you need to provide a file to upload"})
 			return
 		}
@@ -152,7 +165,7 @@ func GinEngine() *gin.Engine {
 			return
 		}
 		// success
-		log.Println("Successfully uploaded to", filename)
+		log.Info("Successfully uploaded to: ", filename)
 		c.JSON(200, gin.H{"file": filename})
 		return
 	})
@@ -182,6 +195,7 @@ func GinEngine() *gin.Engine {
 			return
 		}
 		// stream data to the requestor
+		log.Info("Successfully downloaded: ", key)
 		c.Data(200, mimeType, s3Buffer.Bytes())
 		return
 	})
