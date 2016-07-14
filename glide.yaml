@@ -9,3 +9,4 @@ import:
 - package: github.com/prashantv/gostub
 - package: github.com/bevanhunt/gowrex
 - package: github.com/itsjamie/gin-cors
+- package: github.com/op/go-logging

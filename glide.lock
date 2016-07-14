@@ -1,5 +1,5 @@
-hash: 040db3f6ed5bde989e00a0baf61dc556dacd41324fdcaff8dfe2547904247d21
-updated: 2016-07-12T10:06:41.033611817-07:00
+hash: 3b08f228ad89beaee414077fbb93030e0d3453728ed3b1684dc110a222b906a5
+updated: 2016-07-14T11:03:21.128184394-07:00
 imports:
 - name: github.com/bevanhunt/gowrex
   version: 9a156bf8614257768af8a9d77a0df4dc7587efa1
@@ -36,7 +36,9 @@ imports:
 - name: github.com/manucorporat/sse
   version: ee05b128a739a0fb76c7ebd3ae4810c1de808d6d
 - name: github.com/mitchellh/mapstructure
-  version: d2dd0262208475919e1a362f675cfc0e7c10e905
+  version: 21a35fb16463dfb7c8eee579c65d995d95e64d1e
+- name: github.com/op/go-logging
+  version: 970db520ece77730c7e4724c61121037378659d9
 - name: github.com/prashantv/gostub
   version: 642477147f211cee06ad952069be5d03d1db7ad6
 - name: github.com/rakyll/magicmime
@@ -44,7 +46,7 @@ imports:
 - name: github.com/rlmcpherson/s3gof3r
   version: 39f5507f61031141057f3f880d9fb9eb97b8afd7
 - name: github.com/satori/go.uuid
-  version: 879c5887cd475cd7864858769793b2ceb0d44feb
+  version: 0aa62d5ddceb50dbcb909d790b5345affd3669b6
 - name: github.com/spf13/cast
   version: 27b586b42e29bec072fe7379259cc719e1289da6
 - name: github.com/spf13/jwalterweatherman
@@ -58,7 +60,7 @@ imports:
   subpackages:
   - context
 - name: golang.org/x/sys
-  version: a408501be4d17ee978c04a618e7a1b22af058c0e
+  version: b518c298ac9dc94b6ac0757394f50d10c5dfa25a
   subpackages:
   - unix
 - name: gopkg.in/go-playground/validator.v8
