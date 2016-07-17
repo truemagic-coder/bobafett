@@ -31,7 +31,7 @@ vendor
 gin-bin
 
 # for go build
-s3box
+bizzbuzz
 
 # for AWS config
 config.json

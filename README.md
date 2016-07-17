@@ -1,4 +1,4 @@
-# Go S3 Microservice
+# BizzBuzz - Go S3 Microservice
 
 ## Local
 

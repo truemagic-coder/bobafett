@@ -1,4 +1,4 @@
-package: s3box
+package: bizzbuzz
 import:
 - package: github.com/gin-gonic/gin
 - package: github.com/spf13/viper

@@ -6,11 +6,11 @@ RUN \
   mv linux-amd64/glide /usr/bin/ && \
   apt-get update && \
   apt-get install -y libmagic-dev
-WORKDIR /go/src/github.com/bevanhunt/s3box
+WORKDIR /go/src/github.com/bevanhunt/bizzbuzz
 COPY . .
 RUN glide install
-RUN go build -o /go/bin/s3box .
-CMD /go/bin/s3box
+RUN go build -o /go/bin/bizzbuzz .
+CMD /go/bin/bizzbuzz
 ENV PORT=8080
 ENV GIN_MODE=release
 EXPOSE 8080
