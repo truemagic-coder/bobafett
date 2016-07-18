@@ -31,7 +31,7 @@ vendor
 gin-bin
 
 # for go build
-bizzbuzz
+bobafett
 
 # for AWS config
 config.json

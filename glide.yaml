@@ -1,4 +1,4 @@
-package: bizzbuzz
+package: bobafett
 import:
 - package: github.com/gin-gonic/gin
 - package: github.com/spf13/viper
