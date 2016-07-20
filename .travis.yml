@@ -4,17 +4,17 @@ go:
   - 1.6
 
 before_install:
-- wget --no-check-certificate https://github.com/Masterminds/glide/releases/download/v0.11.0/glide-v0.11.0-linux-amd64.tar.gz
-- tar xvf glide-v0.11.0-linux-amd64.tar.gz
-- sudo mv linux-amd64/glide /usr/bin/
-- sudo apt-get update -qq
-- sudo apt-get install -qq libmagic-dev
+  - wget --no-check-certificate https://github.com/Masterminds/glide/releases/download/v0.11.0/glide-v0.11.0-linux-amd64.tar.gz
+  - tar xvf glide-v0.11.0-linux-amd64.tar.gz
+  - sudo mv linux-amd64/glide /usr/bin/
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq libmagic-dev
 
 install: 
-- glide install
+  - glide install
 
 script:
-- go test
+  - go test -coverprofile=coverage.txt -covermode=atomic
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
