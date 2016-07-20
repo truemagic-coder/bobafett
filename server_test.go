@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -26,8 +24,6 @@ func Test(t *testing.T) {
 		g.Before(func() {
 			// set to release mode to hide debug warning
 			gin.SetMode(gin.ReleaseMode)
-			// disable logging in test
-			log.SetOutput(ioutil.Discard)
 		})
 		g.Describe("/:", func() {
 			g.It("route / should have proper body", func() {
