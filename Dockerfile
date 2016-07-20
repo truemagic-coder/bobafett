@@ -1,8 +1,8 @@
 FROM golang:1.6
 
 RUN \
-  wget --no-check-certificate https://github.com/Masterminds/glide/releases/download/0.11.0/glide-0.11.0-linux-amd64.tar.gz && \
-  tar xvf glide-0.11.0-linux-amd64.tar.gz && \
+  wget --no-check-certificate https://github.com/Masterminds/glide/releases/download/v0.11.0/glide-v0.11.0-linux-amd64.tar.gz && \
+  tar xvf glide-v0.11.0-linux-amd64.tar.gz && \
   mv linux-amd64/glide /usr/bin/ && \
   apt-get update && \
   apt-get install -y libmagic-dev
