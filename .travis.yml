@@ -4,8 +4,8 @@ go:
   - 1.6
 
 before_install:
-- apt-get update
-- apt-get install -y libmagic-dev
+- sudo apt-get update -qq
+- sudo apt-get install -qq libmagic-dev
 
 install: 
 - glide install
