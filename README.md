@@ -11,8 +11,14 @@
 - ` brew install go `
 - ` brew install glide `
 - ` brew install libmagic `
--  setup [GOPATH](https://gist.github.com/vsouza/77e6b20520d07652ed7d) for your env file (.bashrc or .zshrc)
-- ` git clone ` this repo into ` ~/golang/src `
+-  setup GOPATH for your env file (.bashrc or .zshrc):
+```bash
+export GOPATH=$HOME/go
+export GOROOT=/usr/local/opt/go/libexec
+export PATH=$PATH:$GOPATH/bin
+export PATH=$PATH:$GOROOT/bin
+```
+- ` git clone ` this repo into ` ~/go/src `
 - ` glide install ` in the local folder
 - ` go get github.com/codegangsta/gin ` to install the reloading dev server
 
