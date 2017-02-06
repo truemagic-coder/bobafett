@@ -1,12 +1,10 @@
-hash: 09f5d4502c953819f2df3e9c7852e73fae594e1a3587ea18a3badd9fa6529dcc
-updated: 2016-07-19T12:07:28.087016408-07:00
+hash: d070fdcb13ce30cd8b90d4ce760ae3f513858cef0cf2dc9daf419c20ecfd59e4
+updated: 2017-02-05T17:51:49.160985274-08:00
 imports:
 - name: github.com/bevanhunt/gowrex
   version: 9a156bf8614257768af8a9d77a0df4dc7587efa1
 - name: github.com/BurntSushi/toml
   version: bec2dacf4b590d26237cfebff4471e21ce543494
-- name: github.com/franela/goblin
-  version: efa9910a3ea4ccb7ee4b977571318af2e51ba05f
 - name: github.com/fsnotify/fsnotify
   version: a8a77c9133d2d6fd8334f3260d06f60e8d80a5fb
 - name: github.com/gin-gonic/gin
@@ -23,10 +21,10 @@ imports:
   subpackages:
   - hcl/ast
   - hcl/parser
-  - hcl/token
-  - json/parser
   - hcl/scanner
   - hcl/strconv
+  - hcl/token
+  - json/parser
   - json/scanner
   - json/token
 - name: github.com/itsjamie/gin-cors
@@ -47,6 +45,12 @@ imports:
   version: 39f5507f61031141057f3f880d9fb9eb97b8afd7
 - name: github.com/satori/go.uuid
   version: 0aa62d5ddceb50dbcb909d790b5345affd3669b6
+- name: github.com/smartystreets/goconvey
+  version: d4c757aa9afd1e2fc1832aaab209b5794eb336e1
+  subpackages:
+  - convey
+  - convey/gotest
+  - convey/reporting
 - name: github.com/spf13/cast
   version: 27b586b42e29bec072fe7379259cc719e1289da6
 - name: github.com/spf13/jwalterweatherman
@@ -67,4 +71,15 @@ imports:
   version: c193cecd124b5cc722d7ee5538e945bdb3348435
 - name: gopkg.in/yaml.v2
   version: a83829b6f1293c91addabc89d0571c246397bbf4
-devImports: []
+testImports:
+- name: github.com/gopherjs/gopherjs
+  version: 2d0acd02933cf349b065398c73490a14f7d9bada
+  subpackages:
+  - js
+- name: github.com/jtolds/gls
+  version: bb0351aa7eb6f322f32667d51375f26a2bca6628
+- name: github.com/smartystreets/assertions
+  version: 26acb9229f421449ac63d014995b282d59261a8b
+  subpackages:
+  - internal/go-render/render
+  - internal/oglematchers
