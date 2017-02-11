@@ -14,9 +14,7 @@
 -  setup GOPATH for your env file (.bashrc or .zshrc):
 ```bash
 export GOPATH=$HOME/go
-export GOROOT=/usr/local/opt/go/libexec
 export PATH=$PATH:$GOPATH/bin
-export PATH=$PATH:$GOROOT/bin
 ```
 - ` git clone ` this repo into ` ~/go/src `
 - ` glide install ` in the local folder
