@@ -1,6 +1,7 @@
 # Bobafett - Go S3 Microservice
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/bevanhunt/bobafett)](https://goreportcard.com/report/github.com/bevanhunt/bobafett)
+[![GoDoc](https://godoc.org/github.com/bevanhunt/bobafett?status.svg)](https://godoc.org/github.com/bevanhunt/bobafett)
 [![Build Status](https://img.shields.io/travis/bevanhunt/bobafett/master.svg)](https://travis-ci.org/bevanhunt/bobafett)
 [![CodeCov](https://img.shields.io/codecov/c/github/bevanhunt/bobafett/master.svg)](https://codecov.io/gh/bevanhunt/bobafett/branch/master)
 
